@@ -31,8 +31,14 @@ bot = Cinch::Bot.new do
   end
 
   # return a random message
-  on :message, /#{NICKNAME} rand/ do |m|
-    msg = Message.all(:limit => 1, :skip => rand(Message.count)).first
+  on :message, /#{NICKNAME} rand(.*)/ do |m, query|
+    msg =
+      if query
+        sel = Message.where(:text => /#{query}/)
+        sel.all(:limit => 1, :skip => rand(sel.count)).first
+      else
+        Message.all(:limit => 1, :skip => rand(Message.count)).first
+      end
     m.reply msg.pretty
   end
 
