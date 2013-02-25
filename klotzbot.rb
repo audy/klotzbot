@@ -15,11 +15,9 @@ bot = Cinch::Bot.new do
 
   # log message (ignores anything that starts with NICKNAME)
   on :message, /.*/ do |m|
-    unless m.message =~ /^#{NICKNAME}/
-      Message.create :text    => m.message,
-                     :user    => m.user.nick,
-                     :channel => m.channel.name
-    end
+     Message.create :text    => m.message,
+	     :user    => m.user.nick,
+	     :channel => m.channel.name
   end
 
   # return last message
