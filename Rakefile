@@ -18,3 +18,7 @@ task :dump do
   end
   pbar.finish
 end
+
+desc 'load messages from messages.txt'
+task :load do
+end
