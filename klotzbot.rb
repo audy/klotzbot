@@ -58,7 +58,7 @@ bot = Cinch::Bot.new do
 
   # reply with number of times a word occurs in the logs
   on :message, /#{NICKNAME} count (.*)/ do |m, query|
-    count = Message.all(:text => /#{query}/).length
+    count = Message.count(:text => /#{query}/)
     m.reply "#{count}"
   end
 
