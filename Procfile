@@ -1,2 +1,1 @@
-web: ruby klotzbot.rb
-#bot: ruby webapp.rb
+bot: ruby klotzbot.rb
