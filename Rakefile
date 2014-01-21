@@ -1,24 +1,67 @@
-require './environment.rb'
 
-Bundler.require :development
+require 'logger'
+require 'bundler'
 
-desc 'start console with environment loaded'
-task :console do
-  binding.pry
-end
+##
+#
+# Usage:
+# - Install dependencies: bundle install
+# - Create the database: rake db:init
+# - Start the bot: CHANNELS=#channel1,#channel2 NICK=theklotzster SERVER=irc.freenode.net rake bot
+# - log some conversations
+# - Dump the db into a tab-separated text file: rake db:dump > messages.txt
+#
+# The end.
+#
+##
 
-desc 'dump messages to messages.txt'
-task :dump do
-  pbar = ProgressBar.new 'saving', Message.size
-  File.open('messages.txt', 'w') do |file|
-    Message.each do |m|
-      pbar.inc
-      file.puts [m.date, m.user, m.text].join(',')
+Bundler.require
+
+DB = Sequel.sqlite 'irc_logs.db',
+		   :loggers => [Logger.new($STDOUT)]
+
+messages = DB[:messages]
+
+namespace :db do
+
+  desc 'initialize the sql database tables'
+  task :init do
+    DB.create_table :messages do
+      primary_key :id
+      String :nick
+      String :channel
+      String :message
+      DateTime :created_at
     end
   end
-  pbar.finish
+
+  desc 'drop the db'
+  task :drop do
+    DB.drop_table :messages
+  end
+
+  desc 'dump the db to STDOUT'
+  task :dump do
+    DB['select * from messages'].each do |m|
+      puts [m[:created_at] , m[:channel], m[:nick], m[:message]].join("\t")
+    end
+  end
 end
 
-desc 'load messages from messages.txt'
-task :load do
+desc 'run the bot'
+task :bot do
+  Cinch::Bot.new do
+    configure do |c|
+      c.server = ENV['SERVER'] || 'irc.freenode.net'
+      c.channels = (ENV['CHANNELS']|| '#botwars').split(',')
+      c.nick = ENV['NICK'] || 'klotztest'
+    end
+  
+    on :message, /.*/ do |m|
+      messages.insert :nick => m.user.nick,
+                      :channel => m.channel.name,
+                      :message => m.message,
+                      :created_at => m.time
+    end
+   end.start
 end

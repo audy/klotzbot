@@ -1,1 +1,0 @@
-bot: ruby klotzbot.rb
