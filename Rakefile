@@ -37,7 +37,20 @@ namespace :db do
 
   desc 'drop the db'
   task :drop do
-    DB.drop_table :messages
+	puts "This will drop all the tables. Are you sure? [y/N]"
+	drop = STDIN.gets.strip.downcase
+	if drop == 'y'
+	  print "Really?! [y/N] "
+	  drop = STDIN.gets.strip.downcase
+	  if drop == 'y'
+	    print "Fine... "
+        DB.drop_table :messages
+	  else
+	    puts "Good choice!"
+	  end
+    else
+      puts "Good choice!"
+	end
   end
 
   desc 'dump the db to STDOUT'
@@ -45,6 +58,19 @@ namespace :db do
     DB['select * from messages'].each do |m|
       puts [m[:created_at] , m[:channel], m[:nick], m[:message]].join("\t")
     end
+  end
+
+  desc 'tail -f the irc stream'
+  task :tail do
+    time = Time.now
+  	while true do
+      msgs = messages.where { created_at > time }.all()
+	  msgs.each do |m|
+	    puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
+      end
+	  time = Time.now
+	  sleep 1
+	end
   end
 end
 
