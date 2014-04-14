@@ -18,9 +18,15 @@ require 'bundler'
 Bundler.require
 
 DB = Sequel.sqlite 'irc_logs.db',
-		   :loggers => [Logger.new($STDOUT)]
+       :loggers => [Logger.new($STDOUT)]
 
 messages = DB[:messages]
+
+desc 'start interactive console with environment loaded'
+task :console do
+  Bundler.require :development
+  binding.pry
+end
 
 namespace :db do
 
@@ -31,46 +37,55 @@ namespace :db do
       String :nick
       String :channel
       String :message
-      DateTime :created_at
+      DateTime :created_at, :index => true
     end
   end
 
   desc 'drop the db'
   task :drop do
-	puts "This will drop all the tables. Are you sure? [y/N]"
-	drop = STDIN.gets.strip.downcase
-	if drop == 'y'
-	  print "Really?! [y/N] "
-	  drop = STDIN.gets.strip.downcase
-	  if drop == 'y'
-	    print "Fine... "
+  puts "This will drop all the tables. Are you sure? [y/N]"
+  drop = STDIN.gets.strip.downcase
+  if drop == 'y'
+    print "Really?! [y/N] "
+    drop = STDIN.gets.strip.downcase
+    if drop == 'y'
+      print "Fine... "
         DB.drop_table :messages
-	  else
-	    puts "Good choice!"
-	  end
     else
       puts "Good choice!"
-	end
+    end
+    else
+      nuts "Good choice!"
+  end
   end
 
   desc 'dump the db to STDOUT'
   task :dump do
+    pbar = ProgressBar.new 'dumping', messages.count()
+    puts %w{created_at channel nick message}.join(30.chr)
     DB['select * from messages'].each do |m|
-      puts [m[:created_at] , m[:channel], m[:nick], m[:message]].join("\t")
+      pbar.inc
+      puts [m[:created_at] , m[:channel], m[:nick], m[:message].gsub(30.chr,'')].join(30.chr)
     end
+    pbar.finish
   end
 
   desc 'tail -f the irc stream'
   task :tail do
     time = Time.now
-  	while true do
+    while true do
       msgs = messages.where { created_at > time }.all()
-	  msgs.each do |m|
-	    puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
-      end
-	  time = Time.now
-	  sleep 1
-	end
+      msgs.each do |m|
+      puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
+    end
+    time = Time.now
+    sleep 1
+  end
+  end
+
+  task :stats do
+    puts "#{messages.count()} messages."
+    puts "#{messages.select_group(:channel).count()} channels."
   end
 end
 
@@ -90,4 +105,29 @@ task :bot do
                       :created_at => m.time
     end
    end.start
+end
+
+desc 'start the telnet server'
+task :telnet do
+  require 'socket'
+
+  @sockets = []
+  Socket.tcp_server_loop 8000 do |sock, client_addrinfo|
+    @sockets << sock
+    Thread.new do
+      time = Time.now
+      sock.puts "There are #{@sockets.size} clients connected\n\n"
+      while true do
+        # this kills the CPU?
+        msgs = messages.where { created_at > time }.all()
+        msgs.each do |m|
+          sock.puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
+        end
+        time = Time.now
+        sleep 1
+      end
+    end
+    @sockets.delete sock
+  end
+
 end
