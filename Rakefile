@@ -6,7 +6,7 @@ require 'bundler'
 # Usage:
 # - Install dependencies: bundle install
 # - Create the database: rake db:init
-# - Start the bot: CHANNELS=#channel1,#channel2 NICK=theklotzster SERVER=irc.freenode.net rake bot
+# - start the bot rake bot
 # - log some conversations
 # - Dump the db into a tab-separated text file: rake db:dump > messages.txt
 #
@@ -90,10 +90,18 @@ end
 
 desc 'run the bot'
 task :bot do
+
+  channels = 
+    if File.exists?('channels.txt')
+        channels = File.readlines('channels.txt').map &:strip
+    else
+        ['#botwars']
+    end
+
   Cinch::Bot.new do
     configure do |c|
       c.server = ENV['SERVER'] || 'irc.freenode.net'
-      c.channels = (ENV['CHANNELS']|| '#botwars').split(',')
+      c.channels = channels
       c.nick = ENV['NICK'] || 'klotztest'
     end
   
