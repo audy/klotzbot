@@ -29,6 +29,11 @@ end
 
 namespace :db do
 
+  desc 'little statistics about db'
+  task :stats do
+    puts "#{messages.count} messages"
+  end
+
   desc 'initialize the sql database tables'
   task :init do
     DB.create_table :messages do
