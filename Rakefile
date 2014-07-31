@@ -29,11 +29,6 @@ end
 
 namespace :db do
 
-  desc 'little statistics about db'
-  task :stats do
-    puts "#{messages.count} messages"
-  end
-
   desc 'initialize the sql database tables'
   task :init do
     DB.create_table :messages do
@@ -87,9 +82,10 @@ namespace :db do
   end
   end
 
+  desc 'print some statistics about database'
   task :stats do
-    puts "#{messages.count()} messages."
-    puts "#{messages.select_group(:channel).count()} channels."
+    puts "#{messages.count()} messages"
+    puts "#{messages.select_group(:channel).count()} channels"
   end
 end
 
