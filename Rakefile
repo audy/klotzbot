@@ -1,4 +1,3 @@
-
 require 'logger'
 require 'bundler'
 
@@ -17,7 +16,7 @@ require 'bundler'
 
 Bundler.require
 
-DB = Sequel.sqlite 'irc_logs.db',
+DB = Sequel.sqlite '/data/irc_logs.db',
        :loggers => [Logger.new($STDOUT)]
 
 messages = DB[:messages]
