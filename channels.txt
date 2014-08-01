@@ -1,7 +1,10 @@
 ##crypto
+##economics
 ##hardware
+##homebrew
 ##ipominer
 ##linux
+##programming
 ##security
 #altcoin-pricetalk
 #bitcoin
@@ -25,6 +28,7 @@
 #debian
 #digitalcoin
 #digitalocean
+#docker
 #dogecoin
 #dogecoin-bots
 #dogecoin-dev
