@@ -24,8 +24,11 @@ DB = Sequel.sqlite database,
 messages = DB[:messages]
 
 def summary_stats messages
-  channels = messages.select('COUNT(DISTINCT channel)')
-  "#{messages.count()} messages, #{channels} channels"
+  start = Time.now
+  channels = messages.count { distinct(:channel) }
+  messages = messages.count
+  stop = Time.now
+  "#{messages} messages, #{channels} channels (#{stop - start})"
 end
 
 desc 'start interactive console with environment loaded'
