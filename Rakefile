@@ -16,12 +16,14 @@ require 'bundler'
 
 Bundler.require
 
-DB = Sequel.sqlite '/data/irc_logs.db',
+database = ENV['DATABASE_URL'] || '/data/irc_logs.db'
+
+DB = Sequel.sqlite database,
        :loggers => [Logger.new($STDOUT)]
 
 messages = DB[:messages]
 
-def summary_stats
+def summary_stats messages
   "#{messages.count()} messages, #{messages.select_group(:channel).count()} channels"
 end
 
@@ -48,18 +50,15 @@ namespace :db do
   task :drop do
   puts "This will drop all the tables. Are you sure? [y/N]"
   drop = STDIN.gets.strip.downcase
-  if drop == 'y'
-    print "Really?! [y/N] "
-    drop = STDIN.gets.strip.downcase
     if drop == 'y'
-      print "Fine... "
-        DB.drop_table :messages
-    else
-      puts "Good choice!"
+        print "Really?! [y/N] "
+        drop = STDIN.gets.strip.downcase
+        if drop == 'y'
+        print 'do it yourself!'
+        else
+        puts 'Good Choice!'
+        end
     end
-    else
-      nuts "Good choice!"
-  end
   end
 
   desc 'dump the db to STDOUT'
@@ -88,7 +87,7 @@ namespace :db do
 
   desc 'print some statistics about database'
   task :stats do
-    puts summary_stats
+    puts summary_stats(messages)
   end
 end
 
@@ -118,7 +117,7 @@ task :bot do
 
     on :message, /#{ENV['NICK']} stats/ do |m|
       if m.user.nick == ENV['OWNER']
-        m.reply summary_statistics
+        m.reply summary_stats(messages)
       end
     end
    end.start
