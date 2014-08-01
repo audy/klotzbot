@@ -21,6 +21,10 @@ DB = Sequel.sqlite '/data/irc_logs.db',
 
 messages = DB[:messages]
 
+def summary_stats
+  "#{messages.count()} messages, #{messages.select_group(:channel).count()} channels"
+end
+
 desc 'start interactive console with environment loaded'
 task :console do
   Bundler.require :development
@@ -84,8 +88,7 @@ namespace :db do
 
   desc 'print some statistics about database'
   task :stats do
-    puts "#{messages.count()} messages"
-    puts "#{messages.select_group(:channel).count()} channels"
+    puts summary_stats
   end
 end
 
@@ -111,6 +114,12 @@ task :bot do
                       :channel => m.channel.name,
                       :message => m.message,
                       :created_at => m.time
+    end
+
+    on :message, /#{ENV['NICK']} stats/ do |m|
+      if m.user.nick == ENV['OWNER']
+        m.reply summary_statistics
+      end
     end
    end.start
 end
