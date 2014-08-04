@@ -52,16 +52,16 @@ namespace :db do
 
   desc 'drop the db'
   task :drop do
-  puts "This will drop all the tables. Are you sure? [y/N]"
-  drop = STDIN.gets.strip.downcase
+    puts "This will drop all the tables. Are you sure? [y/N]"
+    drop = STDIN.gets.strip.downcase
     if drop == 'y'
-        print "Really?! [y/N] "
-        drop = STDIN.gets.strip.downcase
-        if drop == 'y'
+      print "Really?! [y/N] "
+      drop = STDIN.gets.strip.downcase
+      if drop == 'y'
         print 'do it yourself!'
-        else
+      else
         puts 'Good Choice!'
-        end
+      end
     end
   end
 
@@ -82,11 +82,11 @@ namespace :db do
     while true do
       msgs = messages.where { created_at > time }.all()
       msgs.each do |m|
-      puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
+        puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
+      end
+      time = Time.now
+      sleep 1
     end
-    time = Time.now
-    sleep 1
-  end
   end
 
   desc 'print some statistics about database'
