@@ -65,13 +65,14 @@ namespace :db do
     end
   end
 
-  desc 'dump the db to STDOUT'
+  desc 'dump the db to STDOUT as serialized JSON'
   task :dump do
+    require 'json'
     pbar = ProgressBar.new 'dumping', messages.count()
     puts %w{created_at channel nick message}.join(30.chr)
     DB['select * from messages'].each do |m|
       pbar.inc
-      puts [m[:created_at] , m[:channel], m[:nick], m[:message].gsub(30.chr,'')].join(30.chr)
+      puts m.to_json
     end
     pbar.finish
   end
