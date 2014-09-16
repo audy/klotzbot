@@ -72,6 +72,12 @@ task :bot do
                      :created_at => m.time
     end
 
+    on :message, /perrier stats/ do |m|
+      if m.nick == ENV['OWNER']
+        m.reply "#{Message.count} messages in #{Channel.count} channels"
+      end
+    end
+
    end.start
 
 end
