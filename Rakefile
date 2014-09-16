@@ -34,13 +34,13 @@ namespace :db do
 
   desc 'tail -f the irc stream'
   task :tail do
-    time = Time.now
+    last_time = Time.now
     while true do
-      msgs = Message.where { created_at > time }.all()
+      msgs = Message.where { created_at > last_time }.all()
+      last_time = Time.now unless msgs.size == 0
       msgs.each do |m|
         puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
       end
-      time = Time.now
       sleep 1
     end
   end
