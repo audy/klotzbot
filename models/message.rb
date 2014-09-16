@@ -1,3 +1,3 @@
 class Message < Sequel::Model
-  many_to_one :channels
+  many_to_one :channel
 end

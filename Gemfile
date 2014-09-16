@@ -8,3 +8,8 @@ gem 'sequel'
 gem 'sqlite3'
 gem 'pry'
 gem 'rake'
+
+group :test do
+  gem 'rspec'
+  gem 'guard-rspec', require: false
+end

@@ -9,7 +9,7 @@ Sequel.migration do
       String :channel
       String :message
 
-      DateTime :created_at, :index => true
+      DateTime :created_at
     end
 
   end
