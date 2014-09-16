@@ -34,6 +34,7 @@ namespace :db do
 
   desc 'tail -f the irc stream'
   task :tail do
+    DB.loggers = []
     last_time = Time.now
     while true do
       msgs = Message.where { created_at > last_time }.all()
