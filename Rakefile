@@ -53,7 +53,7 @@ task :bot do
     if File.exists?('channels.txt')
         channels = File.readlines('channels.txt').map &:strip
     else
-        ['#botwars']
+        ['#sciencelab2021']
     end
 
   Cinch::Bot.new do
@@ -64,17 +64,13 @@ task :bot do
     end
   
     on :message, /.*/ do |m|
-      messages.insert :nick => m.user.nick,
-                      :channel => m.channel.name,
-                      :message => m.message,
-                      :created_at => m.time
+      channel = Channel.find_or_create name: m.channel.name
+      Message.create :nick => m.user.nick,
+                     :channel => channel,
+                     :message => m.message,
+                     :created_at => m.time
     end
 
-    on :message, /#{ENV['NICK']} stats/ do |m|
-      if m.user.nick == ENV['OWNER']
-        m.reply summary_stats(messages)
-      end
-    end
    end.start
 
 end
