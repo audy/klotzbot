@@ -40,7 +40,7 @@ namespace :db do
       msgs = Message.where { created_at > last_time }.all()
       last_time = Time.now unless msgs.size == 0
       msgs.each do |m|
-        puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
+        puts "#{m.channel.name}\t#{m.nick}: #{m.message}"
       end
       sleep 1
     end
