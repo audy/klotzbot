@@ -1,32 +1,9 @@
-require 'logger'
-require 'bundler'
-
-##
-#
-# Usage:
-# - Install dependencies: bundle install
-# - Create the database: rake db:init
-# - start the bot rake bot
-# - log some conversations
-# - Dump the db into a tab-separated text file: rake db:dump > messages.txt
-#
-# The end.
-#
-##
-
-Bundler.require
-
-database = ENV['DATABASE_URL'] || '/data/irc_logs.db'
-
-DB = Sequel.sqlite database,
-       :loggers => [Logger.new($STDOUT)]
-
-messages = DB[:messages]
+require './environment.rb'
 
 def summary_stats messages
   start = Time.now
-  channels = messages.count { distinct(:channel) }
-  messages = messages.count
+  channels = Message.count { distinct(:channel) }
+  messages = Message.count
   stop = Time.now
   "#{messages} messages, #{channels} channels (#{stop - start})"
 end
@@ -39,14 +16,17 @@ end
 
 namespace :db do
 
-  desc 'initialize the sql database tables'
-  task :init do
-    DB.create_table :messages do
-      primary_key :id
-      String :nick
-      String :channel
-      String :message
-      DateTime :created_at, :index => true
+  desc 'run migrations'
+  task :migrate, [:version] do |t, args|
+    Sequel.extension :migration
+    if args[:version]
+      puts "Migrating to version #{args[:version]}"
+      Sequel::Migrator.run(DB,
+                           'migrations',
+                           target: args[:version].to_i)
+    else
+      puts "Migrating to latest"
+      Sequel::Migrator.run(DB, 'migrations')
     end
   end
 
@@ -68,9 +48,9 @@ namespace :db do
   desc 'dump the db to STDOUT as serialized JSON'
   task :dump do
     require 'json'
-    pbar = ProgressBar.new 'dumping', messages.count()
+    pbar = ProgressBar.new 'dumping', Message.count
     puts %w{created_at channel nick message}.join(30.chr)
-    DB['select * from messages'].each do |m|
+    Message.each do |m|
       pbar.inc
       puts m.to_json
     end
@@ -81,7 +61,7 @@ namespace :db do
   task :tail do
     time = Time.now
     while true do
-      msgs = messages.where { created_at > time }.all()
+      msgs = Message.where { created_at > time }.all()
       msgs.each do |m|
         puts "#{m[:channel]}\t#{m[:nick]}: #{m[:message]}"
       end
@@ -92,7 +72,7 @@ namespace :db do
 
   desc 'print some statistics about database'
   task :stats do
-    puts summary_stats(messages)
+    puts summary_stats(Message.all)
   end
 end
 
