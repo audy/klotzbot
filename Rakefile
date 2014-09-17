@@ -20,7 +20,7 @@ end
 namespace :db do
 
   task :dump do
-    File.open('db.dump', 'w') do |handle|
+    File.open(ENV['DATA'], 'w') do |handle|
       Message.each do |m|
         dat = { message: m.message, nick: m.nick, channel: m.channel.name,
               created_at: m.created_at }
@@ -33,21 +33,18 @@ namespace :db do
 
     channels = Hash.new { |h, k| h[k] = Channel.find_or_create(name: k).id }
 
-    File.open('db.dump') do |handle|
+    File.open(ENV['DATA']) do |handle|
       DB.loggers = []
       pbar = ProgressBar.new 'loading', `wc -l db.dump`.split[0].to_i
-      DB.transaction do
-        handle.each do |line|
-          pbar.inc
-          dat = JSON.parse(line)
-          m = Message.create message: dat['message'],
-                          nick: dat['nick'],
-                          channel_id: channels[dat['channel']],
-                          created_at: dat['created_at']
-        end
-        pbar.finish
-        puts 'committing'
+      handle.each do |line|
+        pbar.inc
+        dat = JSON.parse(line)
+        m = Message.create message: dat['message'],
+                        nick: dat['nick'],
+                        channel_id: channels[dat['channel']],
+                        created_at: dat['created_at']
       end
+      pbar.finish
       puts "#{Message.count} messages and #{Channel.count} channels"
     end
   end
