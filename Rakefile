@@ -37,6 +37,17 @@ namespace :db do
 
     File.open(DUMP_FILE) do |handle|
       DB.loggers = []
+      pbar = ProgressBar.new 'loading', `wc -l #{DUMP_FILE}`.split[0].to_i
+      DB.transaction {
+        handle.each do |line|
+          pbar.inc
+          dat = JSON.parse(line)
+          m = Message.create message: dat['message'],
+                          nick: dat['nick'],
+                          channel_id: channels[dat['channel']],
+                          created_at: dat['created_at']
+        end
+      }
       pbar.finish
       puts "#{Message.count} messages and #{Channel.count} channels"
     end
