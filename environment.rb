@@ -10,6 +10,9 @@ end
 # connect to in-memory db if in test environment
 database = test? ? 'sqlite:///' : ENV['DATABASE_URL'] || 'sqlite://database.sqlite'
 
+# because computers
+Sequel::Model.plugin :force_encoding, 'UTF-8'
+
 DB = Sequel.connect database
 DB.loggers << Logger.new($stderr) unless test?
 
