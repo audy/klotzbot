@@ -38,6 +38,7 @@ namespace :db do
     File.open(DUMP_FILE) do |handle|
       DB.loggers = []
       pbar = ProgressBar.new 'loading', `wc -l #{DUMP_FILE}`.split[0].to_i
+      Message.use_after_commit_rollback = false
       DB.transaction {
         handle.each do |line|
           pbar.inc
