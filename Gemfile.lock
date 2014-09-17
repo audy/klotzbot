@@ -24,6 +24,7 @@ GEM
       rb-inotify (>= 0.9)
     lumberjack (1.0.9)
     method_source (0.8.2)
+    pg (0.17.1)
     progressbar (0.21.0)
     pry (0.10.1)
       coderay (~> 1.1.0)
@@ -58,6 +59,7 @@ PLATFORMS
 DEPENDENCIES
   cinch
   guard-rspec
+  pg
   progressbar
   pry
   rake

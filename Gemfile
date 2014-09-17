@@ -6,6 +6,7 @@ gem 'progressbar'
 gem 'cinch'
 gem 'sequel'
 gem 'sqlite3'
+gem 'pg'
 gem 'pry'
 gem 'rake'
 
