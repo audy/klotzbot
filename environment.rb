@@ -10,7 +10,7 @@ end
 # connect to in-memory db if in test environment
 database = test? ? 'sqlite:///' : ENV['DATABASE_URL'] || 'sqlite://database.sqlite'
 
-DB = Sequel.connect database, pool_timeout: 60
+DB = Sequel.connect database
 DB.loggers << Logger.new($stderr) unless test?
 
 if test?
