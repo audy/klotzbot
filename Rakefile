@@ -2,6 +2,7 @@ require './environment.rb'
 require 'json'
 
 DUMP_FILE = ENV['DATA']
+CHUNK_SIZE = 10
 
 desc 'start interactive console with environment loaded'
 task :console do
@@ -37,16 +38,14 @@ namespace :db do
 
     File.open(DUMP_FILE) do |handle|
       DB.loggers = []
-      pbar = ProgressBar.new 'loading', `wc -l #{DUMP_FILE}`.split[0].to_i
+      pbar = ProgressBar.new 'loading', `wc -l #{DUMP_FILE}`.split[0].to_i/CHUNK_SIZE
       Message.use_after_commit_rollback = false
       DB.transaction {
-        handle.each do |line|
+        handle.each_slice(CHUNK_SIZE) do |chunk|
           pbar.inc
-          dat = JSON.parse(line)
-          m = Message.create message: dat['message'],
-                          nick: dat['nick'],
-                          channel_id: channels[dat['channel']],
-                          created_at: dat['created_at']
+          dat = chunk.map { |line| JSON.parse(line) }
+          dat = dat.map { |x| [ x['message'], x['nick'], channels[x['channel_id']], x['created_at'] ] }
+          DB[:messages].import([:message, :nick, :channel_id, :created_at], dat)
         end
       }
       pbar.finish
