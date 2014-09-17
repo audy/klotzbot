@@ -12,6 +12,8 @@ database = test? ? 'sqlite:///' : ENV['DATABASE_URL'] || 'sqlite://database.sqli
 
 # because computers
 Sequel::Model.plugin :force_encoding, 'UTF-8'
+Encoding.default_internal = Encoding::UTF_8
+Encoding.default_external = Encoding::UTF_8
 
 DB = Sequel.connect database
 DB.loggers << Logger.new($stderr) unless test?
