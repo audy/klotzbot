@@ -1,6 +1,8 @@
 require './environment.rb'
 require 'json'
 
+DUMP_FILE = ENV['DATA']
+
 desc 'start interactive console with environment loaded'
 task :console do
   Bundler.require :development
@@ -20,7 +22,7 @@ end
 namespace :db do
 
   task :dump do
-    File.open(ENV['DATA'], 'w') do |handle|
+    File.open(DUMP_FILE, 'w') do |handle|
       Message.each do |m|
         dat = { message: m.message, nick: m.nick, channel: m.channel.name,
               created_at: m.created_at }
@@ -33,17 +35,8 @@ namespace :db do
 
     channels = Hash.new { |h, k| h[k] = Channel.find_or_create(name: k).id }
 
-    File.open(ENV['DATA']) do |handle|
+    File.open(DUMP_FILE) do |handle|
       DB.loggers = []
-      pbar = ProgressBar.new 'loading', `wc -l db.dump`.split[0].to_i
-      handle.each do |line|
-        pbar.inc
-        dat = JSON.parse(line)
-        m = Message.create message: dat['message'],
-                        nick: dat['nick'],
-                        channel_id: channels[dat['channel']],
-                        created_at: dat['created_at']
-      end
       pbar.finish
       puts "#{Message.count} messages and #{Channel.count} channels"
     end
