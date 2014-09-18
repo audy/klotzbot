@@ -3,6 +3,8 @@ require 'bundler'
 
 Bundler.require
 
+require './bot.rb'
+
 def test?
   ENV['BOT_ENV'] == 'test'
 end
