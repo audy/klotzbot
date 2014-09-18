@@ -72,7 +72,7 @@ namespace :db do
     DB.loggers = []
     last_time = Time.now
     while true do
-      msgs = Message.where { created_at > last_time }.all()
+      msgs = Message.where { created_at > last_time }.last(10)
       last_time = Time.now unless msgs.size == 0
       msgs.each do |m|
         puts "#{m.channel.name}\t#{m.nick}: #{m.message}"
