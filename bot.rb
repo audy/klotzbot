@@ -24,13 +24,15 @@ end
 }
 
 @bot.on_msg { |event|
-  roll {
-    channel = Channel.find_or_create name: event.channel
-    m = Message.create :nick => event.nick,
-                      :channel => channel,
-                      :message => event.message,
-                      :created_at => Time.now
+  Thread.new do
+    roll {
+      channel = Channel.find_or_create name: event.channel
+      m = Message.create :nick => event.nick,
+                        :channel => channel,
+                        :message => event.message,
+                        :created_at => Time.now
 
-    puts "[#{m.channel}] #{m.nick}: #{m.message}"
-  }
+      puts "[#{m.channel}] #{m.nick}: #{m.message}"
+    }
+  end
 }
