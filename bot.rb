@@ -17,7 +17,6 @@ end
 
 
 @bot.on_welcome proc {
-  raise Exception
   channels.each do |channel|
     @bot.join channel
     sleep 1
