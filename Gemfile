@@ -10,6 +10,10 @@ gem 'pg'
 gem 'pry'
 gem 'rake'
 
+group :production do
+  gem 'rollbar', '~> 1.0.0'
+end
+
 group :test do
   gem 'rspec'
   gem 'guard-rspec', require: false

@@ -9,6 +9,22 @@ def test?
   ENV['BOT_ENV'] == 'test'
 end
 
+def production?
+  ENV['BOT_ENV'] == 'production'
+end
+
+# setup rollbar
+if production?
+  Bundler.require :production
+
+  Rollbar.configure do |config|
+    config.access_token = ENV['ROLLBAR_ACCESS_TOKEN']
+    config.root = Dir.pwd
+    config.framework = 'Perrier'
+    config.environment = 'production'
+  end
+end
+
 # connect to in-memory db if in test environment
 database = test? ? 'sqlite:///' : ENV['DATABASE_URL'] || 'sqlite://database.sqlite'
 
