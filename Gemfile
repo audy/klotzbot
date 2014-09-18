@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby '2.1.2'
 
 gem 'progressbar'
-gem 'cinch'
+gem 'net-yail', require: 'net/yail'
 gem 'sequel'
 gem 'sqlite3'
 gem 'pg'

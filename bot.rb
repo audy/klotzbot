@@ -4,39 +4,23 @@ else
     ['#sciencelab2021']
 end
 
-# report exceptions in a block to Rollbar
-# work-around b/c cinch catches exceptions
-def rollbar &block
-  begin
-    yield
-  rescue Exception => e
-    Rollbar.report_exception(e)
+@bot = Net::YAIL.new(address: ENV['SERVER'] || 'irc.freenode.net',
+                     username: 'perrier',
+                     realname: 'perrier',
+                     nicknames: [ ENV['NICK'] || 'perrier_test' ])
+
+@bot.on_welcome proc {
+  channels.each do |channel|
+    @bot.join channel
   end
-end
+}
 
-@bot =
-  Cinch::Bot.new do
+@bot.on_msg { |event|
+  channel = Channel.find_or_create name: event.channel
+  m = Message.create :nick => event.nick,
+                     :channel => channel,
+                     :message => event.message,
+                     :created_at => Time.now
 
-    configure do |c|
-      c.server = ENV['SERVER'] || 'irc.freenode.net'
-      c.channels = channels
-      c.nick = ENV['NICK'] || 'klotztest'
-    end
-
-    on :message, /.*/ do |m|
-      rollbar {
-        channel = Channel.find_or_create name: m.channel.name
-        Message.create :nick => m.user.nick,
-                        :channel => channel,
-                        :message => m.message,
-                        :created_at => m.time
-      }
-    end
-
-    on :message, /perrier stats/ do |m|
-      if m.user.nick == ENV['OWNER']
-        m.reply "#{Message.count} messages in #{Channel.count} channels"
-      end
-    end
-
-  end
+  puts "[#{m.channel}] #{m.nick}: #{m.message}"
+}

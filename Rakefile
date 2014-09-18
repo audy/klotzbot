@@ -84,5 +84,5 @@ end
 
 desc 'run the bot'
 task :bot do
-  @bot.start
+  @bot.start_listening!
 end
