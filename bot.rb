@@ -4,6 +4,16 @@ else
     ['#sciencelab2021']
 end
 
+# report exceptions in a block to Rollbar
+# work-around b/c cinch catches exceptions
+def rollbar &block
+  begin
+    yield
+  rescue Exception => e
+    Rollbar.report_exception(e)
+  end
+end
+
 @bot =
   Cinch::Bot.new do
 
@@ -14,11 +24,13 @@ end
     end
 
     on :message, /.*/ do |m|
-      channel = Channel.find_or_create name: m.channel.name
-      Message.create :nick => m.user.nick,
-                      :channel => channel,
-                      :message => m.message,
-                      :created_at => m.time
+      rollbar {
+        channel = Channel.find_or_create name: m.channel.name
+        Message.create :nick => m.user.nick,
+                        :channel => channel,
+                        :message => m.message,
+                        :created_at => m.time
+      }
     end
 
     on :message, /perrier stats/ do |m|
