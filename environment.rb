@@ -3,8 +3,6 @@ require 'bundler'
 
 Bundler.require
 
-require './bot.rb'
-
 def test?
   ENV['BOT_ENV'] == 'test'
 end
@@ -46,3 +44,6 @@ end
 Dir[File.join(File.expand_path(File.dirname(__FILE__)), 'models', '*.rb')].each { |f|
   require(f)
 }
+
+# require after models
+require './bot.rb'

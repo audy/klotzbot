@@ -5,18 +5,33 @@ channels = Channel.all.map &:name
                      realname: 'perrier',
                      nicknames: [ ENV['NICK'] || 'perrier_test' ])
 
+@bot.log.level = Logger::DEBUG unless production?
+
+def roll &block
+  begin
+    yield
+  rescue Exception => e
+    Rollbar.report_exception(e)
+  end
+end
+
+
 @bot.on_welcome proc {
+  raise Exception
   channels.each do |channel|
     @bot.join channel
+    sleep 1
   end
 }
 
 @bot.on_msg { |event|
-  channel = Channel.find_or_create name: event.channel
-  m = Message.create :nick => event.nick,
-                     :channel => channel,
-                     :message => event.message,
-                     :created_at => Time.now
+  roll {
+    channel = Channel.find_or_create name: event.channel
+    m = Message.create :nick => event.nick,
+                      :channel => channel,
+                      :message => event.message,
+                      :created_at => Time.now
 
-  puts "[#{m.channel}] #{m.nick}: #{m.message}"
+    puts "[#{m.channel}] #{m.nick}: #{m.message}"
+  }
 }
