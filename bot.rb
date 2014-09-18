@@ -1,8 +1,4 @@
-if File.exists?('channels.txt')
-    channels = File.readlines('channels.txt').map &:strip
-else
-    ['#sciencelab2021']
-end
+channels = Channel.all.map &:name
 
 @bot = Net::YAIL.new(address: ENV['SERVER'] || 'irc.freenode.net',
                      username: 'perrier',
