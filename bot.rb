@@ -29,9 +29,13 @@ end
     roll {
       channel = Channel.find_or_create name: event.channel
 
+      # fix encoding
+      msg = event.message.encode 'UTF-8', { :invalid => :replace,
+                                            :undef => :replace }
+
       m = Message.create :nick       => event.nick,
                          :channel    => channel,
-                         :message    => event.message,
+                         :message    => msg,
                          :created_at => Time.now
 
       puts "[#{m.channel}] #{m.nick}: #{m.message}"
