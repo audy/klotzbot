@@ -16,7 +16,7 @@ end
     end
 
     on :message, /.*/ do |m|
-      rollbar {
+      roll {
         channel = Channel.find_or_create name: m.channel.name
         Message.create :nick => m.user.nick,
                         :channel => channel,
