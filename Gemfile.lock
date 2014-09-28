@@ -3,6 +3,7 @@ GEM
   specs:
     celluloid (0.16.0)
       timers (~> 4.0.0)
+    cinch (2.1.0)
     coderay (1.1.0)
     diff-lcs (1.2.5)
     ffi (1.9.3)
@@ -24,7 +25,6 @@ GEM
     lumberjack (1.0.9)
     method_source (0.8.2)
     multi_json (1.10.1)
-    net-yail (1.6.2)
     pg (0.17.1)
     progressbar (0.21.0)
     pry (0.10.1)
@@ -60,8 +60,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  cinch
   guard-rspec
-  net-yail
   pg
   progressbar
   pry

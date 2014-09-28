@@ -85,7 +85,7 @@ end
 desc 'run the bot'
 task :bot do
   begin
-    @bot.start_listening!
+    @bot.start
   rescue Errno::ECONNRESET
     sleep 10
     retry
