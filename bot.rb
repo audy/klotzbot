@@ -11,7 +11,7 @@ end
 
     configure do |c|
       c.server = ENV['SERVER'] || 'irc.freenode.net'
-      c.channels = -> { Channel.all.map &:name }
+      c.channels = Channel.all.map &:name
       c.nick = ENV['NICK'] || 'klotztest'
     end
 
