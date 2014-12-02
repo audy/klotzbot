@@ -4,6 +4,7 @@ Bundler.require :web
 
 set :server, 'thin'
 set :sockets, []
+set :port, ENV['PORT']
 
 def tail &block
   DB.loggers = []
