@@ -44,6 +44,3 @@ end
 Dir[File.join(File.expand_path(File.dirname(__FILE__)), 'models', '*.rb')].each { |f|
   require(f)
 }
-
-# require after models
-require './bot.rb'

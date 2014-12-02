@@ -10,6 +10,12 @@ gem 'pg'
 gem 'pry'
 gem 'rake'
 
+
+group :web do
+  gem 'sinatra'
+  gem 'sinatra-websocket'
+end
+
 group :production do
   gem 'rollbar', '~> 1.0.0'
 end
