@@ -1,4 +1,4 @@
-require './enviornment.rb'
+require './environment.rb'
 
 def roll &block
   begin
@@ -34,3 +34,11 @@ end
     end
 
   end
+
+
+begin
+  @bot.start
+rescue Errno::ECONNRESET
+  sleep 10
+  retry
+end

@@ -81,13 +81,3 @@ namespace :db do
     end
   end
 end
-
-desc 'run the bot'
-task :bot do
-  begin
-    @bot.start
-  rescue Errno::ECONNRESET
-    sleep 10
-    retry
-  end
-end
