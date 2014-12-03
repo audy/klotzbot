@@ -22,6 +22,7 @@ end
 
 namespace :db do
 
+  desc 'dump messages to /dev/stdout'
   task :dump do
     File.open(DUMP_FILE, 'w') do |handle|
       Message.each do |m|
