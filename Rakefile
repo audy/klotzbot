@@ -25,7 +25,7 @@ namespace :db do
   desc 'dump messages to /dev/stdout'
   task :dump do
     File.open(DUMP_FILE, 'w') do |handle|
-      Message.each do |m|
+      Message.find_all do |m|
         dat = { message: m.message, nick: m.nick, channel: m.channel.name,
               created_at: m.created_at }
         handle.puts dat.to_json
