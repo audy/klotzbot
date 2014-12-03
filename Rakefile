@@ -1,7 +1,7 @@
 require './environment.rb'
 require 'json'
 
-DUMP_FILE = ENV['DATA']
+DUMP_FILE = ENV['DATA'] || '/dev/stdout'
 CHUNK_SIZE = 1000
 
 desc 'start interactive console with environment loaded'
