@@ -23,61 +23,10 @@ def tail &block
 end
 
 get '/' do
-
-  unless request.websocket?
-    erb :index
-  else
-    request.websocket do |ws|
-      ws.onopen do
-        ws.send("Hello, World!")
-        settings.sockets << ws
-      end
-
-      tail do |msg|
-        puts "new message: #{msg}"
-        EM.next_tick { settings.sockets.each { |s| s.send(msg) } }
-      end
-
-      ws.onclose do
-        warn "websocket closed"
-        settings.sockets.delete(ws)
-      end
-
-    end
-
-  end
+  @msg = Message.random
+  erb :index
 end
 
 __END__
 @@ index
-<html>
-
-  <body>
-     <div id="msgs"></div>
-  </body>
-
-  <script type="text/javascript">
-    window.onload = function(){
-      (function(){
-        var show = function(el){
-          return function(msg){ el.innerHTML = msg + '<br />' + el.innerHTML; }
-        }(document.getElementById('msgs'));
-
-        var ws       = new WebSocket('ws://' + window.location.host + window.location.pathname);
-        ws.onopen    = function()  { show('websocket opened'); };
-        ws.onclose   = function()  { show('websocket closed'); }
-        ws.onmessage = function(m) { show('websocket message: ' +  m.data); };
-
-        var sender = function(f){
-          var input     = document.getElementById('input');
-          input.onclick = function(){ input.value = "" };
-          f.onsubmit    = function(){
-            ws.send(input.value);
-            input.value = "send a message";
-            return false;
-          }
-        }(document.getElementById('form'));
-      })();
-    }
-  </script>
-</html>
+<%= @msg.message %> - <%= @msg.nick %> (<%= @msg.channel.name %>) <%= @msg.created_at %>
