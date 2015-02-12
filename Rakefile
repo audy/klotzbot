@@ -10,6 +10,11 @@ task :console do
   binding.pry
 end
 
+task :random do
+  msg = Message.order(Sequel.lit('RANDOM()')).first
+  puts "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+end
+
 namespace :seed do
   task :messages do
     100.times do
