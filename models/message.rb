@@ -3,6 +3,10 @@ class Message < Sequel::Model
  
   def self.random
     id = rand(1..self.last.id)
-    msg = self[id]
+    @msg = nil
+    while @msg.nil?
+      @msg = self[id]
+    end
+    return @msg
   end
 end
