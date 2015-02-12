@@ -11,7 +11,7 @@ task :console do
 end
 
 task :random do
-  msg = Message.order(Sequel.lit('RANDOM()')).first
+  msg = Message.random
   puts "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
 end
 

@@ -34,7 +34,7 @@ end
     end
 
     on :message, /perrier random/ do |m|
-      msg = Message.order(Sequel.lit('RANDOM()')).first
+      msg = Message.random
       m.reply "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
     end
 
