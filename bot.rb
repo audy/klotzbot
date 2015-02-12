@@ -29,7 +29,7 @@ end
 
     on :message, /perrier stats/ do |m|
       if m.user.nick == ENV['OWNER']
-        m.reply "#{Message.count} messages in #{Channel.count} channels"
+        m.reply "#{Message.last.id} messages in #{Channel.count} channels"
       end
     end
 
