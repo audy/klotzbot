@@ -38,6 +38,10 @@ end
       m.reply "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
     end
 
+    on :message, /perrier[:]? channels/ do |m|
+      m.reply puts Channel.all.map(&:name).join(', ')
+    end
+
   end
 
 
