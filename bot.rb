@@ -27,13 +27,13 @@ end
       }
     end
 
-    on :message, /perrier stats/ do |m|
+    on :message, /perrier[:]? stats/ do |m|
       if m.user.nick == ENV['OWNER']
         m.reply "#{Message.last.id} messages in #{Channel.count} channels"
       end
     end
 
-    on :message, /perrier random/ do |m|
+    on :message, /perrier[:]? random/ do |m|
       msg = Message.random
       m.reply "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
     end
