@@ -1,30 +1,30 @@
 require './environment.rb'
 
-def roll &block
-  begin
-    yield
-  rescue Exception => e
-    Rollbar.report_exception(e)
-  end
-end
 
 @bot =
   Cinch::Bot.new do
 
+    # memoize channels
+    # channel.name -> channel.id
+    $channels = {}
+
+    # fill up channel hash
+    Channel.all.map { |c| $channels[c.name] = c.id }
+
     configure do |c|
-      c.server = ENV['SERVER'] || 'irc.freenode.net'
+      c.server = ENV['SERVER'] || 'localhost'
       c.channels = Channel.all.map &:name
       c.nick = ENV['NICK'] || 'klotztest'
     end
 
     on :message, /.*/ do |m|
-      roll {
-        channel = Channel.find_or_create name: m.channel.name
-        Message.create :nick => m.user.nick,
-                        :channel => channel,
-                        :message => m.message,
-                        :created_at => m.time
-      }
+      channel_id = $channels[m.channel.name]
+      fail "unknown channel #{m.channel.name}" if channel_id.nil?
+      Message.dataset.insert({
+        :nick => m.user.nick,
+        :channel_id => channel_id,
+        :message => m.message,
+        :created_at => m.time})
     end
 
     on :message, /perrier[:]? stats/ do |m|
