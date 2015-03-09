@@ -33,12 +33,21 @@ namespace :db do
 
   desc 'dump messages to /dev/stdout'
   task :dump do
-    File.open(DUMP_FILE, 'w') do |handle|
-      Message.find_all do |m|
-        dat = { message: m.message, nick: m.nick, channel: m.channel.name,
-              created_at: m.created_at }
-        handle.puts dat.to_json
-      end
+
+    # memoize channels
+    # channel.name -> channel.id
+    $channels = {}
+
+    # fill up channel hash
+    Channel.all.map { |c| $channels[c.name] = c.id }
+
+    Message.find_all do |m|
+      dat = { message: m.message,
+              nick: m.nick,
+              channel: $channels[m.channel_id],
+              created_at: m.created_at
+            }
+      puts dat.to_json
     end
   end
 
