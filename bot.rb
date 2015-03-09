@@ -35,7 +35,7 @@ require './environment.rb'
 
     on :message, /perrier[:]? random/ do |m|
       msg = Message.random
-      m.reply "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+      m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message}"
     end
 
     on :message, /perrier[:]? channels/ do |m|
