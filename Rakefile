@@ -10,6 +10,10 @@ task :console do
   binding.pry
 end
 
+task :channels do
+  puts Channel.all.map(&:name).join(', ')
+end
+
 task :random do
   msg = Message.random
   puts "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
