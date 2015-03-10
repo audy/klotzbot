@@ -26,10 +26,11 @@ namespace :chan do
     p Channel.find(name: args[:name]).delete
   end
 
-  desc 'channel-based statistics'
+  desc 'channel-based message counts'
   task :stats do
-    Channel.group_and_count(:name).all.each do |x|
-      puts "#{x.values[:name]} -> #{x.values[:count]}"
+    Message.group_and_count(:channel_id).all.each do |x|
+      channel = Channel[x[:channel_id]]
+      puts "#{channel.name} -> #{x.values[:count]}"
     end
   end
 end
