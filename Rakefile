@@ -10,15 +10,38 @@ task :console do
   binding.pry
 end
 
-task :channels do
-  puts Channel.all.map(&:name).join(', ')
+namespace :chan do
+  desc 'list channels'
+  task :list do
+    Channel.all.map { |c| puts "#{c.id} -> #{c.name}" }
+  end
+
+  desc 'add a channel'
+  task :add, :name do |t, args|
+    p Channel.find_or_create(name: args[:name])
+  end
+
+  desc 'remove a channel'
+  task :rm, :name do |t, args|
+    p Channel.find(name: args[:name]).delete
+  end
+
+  desc 'channel-based statistics'
+  task :stats do
+    Channel.group_and_count(:name).all.each do |x|
+      puts "#{x.values[:name]} -> #{x.values[:count]}"
+    end
+  end
 end
 
+
+desc 'print random message'
 task :random do
   msg = Message.random
   puts "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
 end
 
+desc 'seed database'
 namespace :seed do
   task :messages do
     100.times do
