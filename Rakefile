@@ -127,7 +127,7 @@ namespace :db do
       msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
       last_time = Time.now unless msgs.size == 0
       msgs.each do |m|
-        chan_name = colormap[m.channel.name]
+        chan_name = m.channel.name.send(colormap[m.channel.name])
         puts "#{chan_name}\t#{m.nick}: #{m.message}"
       end
       sleep 1
