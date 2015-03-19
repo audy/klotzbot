@@ -48,7 +48,8 @@ namespace :seed do
     100.times do
       Message.create nick: 'test',
         channel: Channel.find_or_create(name: %w{#test1 #test2 #test3}.sample),
-        message: 'test test test!'
+        message: 'test test test!',
+        created_at: Time.now
     end
   end
 end
@@ -64,7 +65,6 @@ namespace :db do
 
     # fill up channel hash
     Channel.all.map { |c| $channels[c.name] = c.id }
-
 
     Message.find_all do |m|
       dat = { message: m.message,
@@ -117,18 +117,31 @@ namespace :db do
     colors = %w{red green yellow blue magenta cyan white light_red light_green
     light_yellow light_blue light_magenta light_cyan light_white }
 
+    # colorize channel name to aid visibility
     colormap = Hash.new { |h, k| h[k] = colors.sample }
     DB.loggers = []
 
     sh 'clear'
+
+    # memoize channels
+    # channel.name -> channel.id
+    channels = {}
+    # fill up channel hash
+    Channel.all.map { |c| channels[c.name] = c.id }
+
+    pad_width = channels.keys.max_by(&:length).size + 2
 
     last_time = Time.now
     while true do
       msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
       last_time = Time.now unless msgs.size == 0
       msgs.each do |m|
-        chan_name = m.channel.name.send(colormap[m.channel.name])
-        puts "#{chan_name}\t#{m.nick}: #{m.message}"
+        # colorize channel name
+        channel = m.channel.name
+        channel = channel.send(colormap[channel])
+        # right-justify channel name
+        channel = "%#{pad_width}s" % channel
+        puts "#{channel}\t#{m.nick}: #{m.message}"
       end
       sleep 1
     end
