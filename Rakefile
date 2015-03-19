@@ -114,6 +114,9 @@ namespace :db do
   desc 'tail -f the irc stream'
   task :tail do
 
+    filter = ENV['FILTER']
+    filter = Regexp.new(filter) unless filter.nil?
+
     colors = %w{red green yellow blue magenta cyan white light_red light_green
     light_yellow light_blue light_magenta light_cyan light_white }
 
@@ -136,6 +139,8 @@ namespace :db do
       msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
       last_time = Time.now unless msgs.size == 0
       msgs.each do |m|
+        next unless filter.nil? or filter =~ m.message
+
         # colorize channel name
         channel = m.channel.name
         channel = channel.send(colormap[channel])
