@@ -9,7 +9,7 @@ gem 'sqlite3'
 gem 'pg'
 gem 'pry'
 gem 'rake'
-
+gem 'colorize'
 
 group :web do
   gem 'sinatra'

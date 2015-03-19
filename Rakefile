@@ -65,6 +65,7 @@ namespace :db do
     # fill up channel hash
     Channel.all.map { |c| $channels[c.name] = c.id }
 
+
     Message.find_all do |m|
       dat = { message: m.message,
               nick: m.nick,
@@ -112,13 +113,22 @@ namespace :db do
 
   desc 'tail -f the irc stream'
   task :tail do
+
+    colors = %w{red green yellow blue magenta cyan white light_red light_green
+    light_yellow light_blue light_magenta light_cyan light_white }
+
+    colormap = Hash.new { |h, k| h[k] = colors.sample }
     DB.loggers = []
+
+    sh 'clear'
+
     last_time = Time.now
     while true do
       msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
       last_time = Time.now unless msgs.size == 0
+      chan_name = colormap[m.channel.name]
       msgs.each do |m|
-        puts "#{m.channel.name}\t#{m.nick}: #{m.message}"
+        puts "#{chan_name}\t#{m.nick}: #{m.message}"
       end
       sleep 1
     end

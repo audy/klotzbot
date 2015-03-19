@@ -6,6 +6,7 @@ GEM
       timers (~> 4.0.0)
     cinch (2.1.0)
     coderay (1.1.0)
+    colorize (0.7.3)
     daemons (1.1.9)
     diff-lcs (1.2.5)
     em-websocket (0.3.8)
@@ -219,6 +220,7 @@ PLATFORMS
 
 DEPENDENCIES
   cinch
+  colorize
   guard-rspec
   pg
   progressbar
