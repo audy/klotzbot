@@ -152,7 +152,7 @@ namespace :db do
         channel = channel.send(colormap[channel])
         # right-justify channel name
         channel = "%#{pad_width}s" % channel
-        puts "#{channel}\t#{m.nick}: #{m.message}"
+        puts "#{channel} #{m.nick}: #{m.message}"
       end
       sleep 1
     end
