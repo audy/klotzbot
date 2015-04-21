@@ -66,7 +66,9 @@ namespace :db do
     # fill up channel hash
     Channel.all.map { |c| $channels[c.name] = c.id }
 
-    Message.find_all do |m|
+    $stderr.puts "dumping messages"
+
+    Message.each do |m|
       dat = { message: m.message,
               nick: m.nick,
               channel: $channels[m.channel_id],
@@ -151,7 +153,7 @@ namespace :db do
         channel = m.channel.name
         channel = channel.send(colormap[channel])
         # right-justify channel name
-        channel = "%16s" % channel
+        channel = sprintf("%#{pad_width}s" % channel)
         puts "#{channel} #{m.nick}: #{m.message}"
       end
       sleep 1
