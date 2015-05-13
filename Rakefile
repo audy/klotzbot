@@ -139,7 +139,7 @@ namespace :db do
     # fill up channel hash
     Channel.all.map { |c| channels[c.name] = c.id }
 
-    pad_width = channels.keys.compact.max_by(&:length).size + 2
+    pad_width = 16
 
     last_time = Time.now
     while true do
