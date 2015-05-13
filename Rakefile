@@ -139,8 +139,6 @@ namespace :db do
     # fill up channel hash
     Channel.all.map { |c| channels[c.name] = c.id }
 
-    pad_width = 16
-
     last_time = Time.now
     while true do
       msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
@@ -153,8 +151,7 @@ namespace :db do
         channel = m.channel.name
         channel = channel.send(colormap[channel])
         # right-justify channel name
-        channel = sprintf("%#{pad_width}s" % channel)
-        puts "#{channel} #{m.nick}: #{m.message}"
+        puts "#{sprintf("%16s" % channel)} #{m.nick}: #{m.message}"
       end
       sleep 0.1
     end
