@@ -156,7 +156,7 @@ namespace :db do
         channel = sprintf("%#{pad_width}s" % channel)
         puts "#{channel} #{m.nick}: #{m.message}"
       end
-      sleep 1
+      sleep 0.1
     end
   end
 end
