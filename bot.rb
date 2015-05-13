@@ -34,12 +34,16 @@ require './environment.rb'
     end
 
     on :message, /perrier[:]? random/ do |m|
-      msg = Message.random
-      m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+      if m.user.nick == ENV['OWNER']
+        msg = Message.random
+        m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+      end
     end
 
     on :message, /perrier[:]? channels/ do |m|
-      m.reply puts Channel.all.map(&:name).join(', ')
+      if m.user.nick == ENV['OWNER']
+        m.reply puts Channel.all.map(&:name).join(', ')
+      end
     end
 
   end
