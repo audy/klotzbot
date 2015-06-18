@@ -6,10 +6,7 @@ require './environment.rb'
 
     # memoize channels
     # channel.name -> channel.id
-    $channels = {}
-
-    # fill up channel hash
-    Channel.all.map { |c| $channels[c.name] = c.id }
+    $channels = Hash.new { |h, k| h[k] = Channel.find(k) }
 
     configure do |c|
       c.server = ENV['SERVER'] || 'irc.freenode.net'
