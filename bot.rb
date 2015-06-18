@@ -6,7 +6,10 @@ require './environment.rb'
 
     # memoize channels
     # channel.name -> channel.id
-    $channels = Hash.new { |h, k| h[k] = Channel.find(k) }
+    $channels = {}
+
+    # fill up channel hash
+    Channel.all.map { |c| $channels[c.name] = c.id }
 
     configure do |c|
       c.server = ENV['SERVER'] || 'irc.freenode.net'
@@ -17,6 +20,7 @@ require './environment.rb'
 
     on :message, /.*/ do |m|
       channel_id = $channels[m.channel.name]
+      fail "unknown channel #{m.channel.name}" if channel_id.nil?
       Message.dataset.insert({
         nick: m.user.nick,
         channel_id: channel_id,
