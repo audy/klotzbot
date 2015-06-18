@@ -17,12 +17,12 @@ require './environment.rb'
 
     on :message, /.*/ do |m|
       channel_id = $channels[m.channel.name]
-      fail "unknown channel #{m.channel.name}" if channel_id.nil?
       Message.dataset.insert({
-        :nick => m.user.nick,
-        :channel_id => channel_id,
-        :message => m.message,
-        :created_at => m.time})
+        nick: m.user.nick,
+        channel_id: channel_id,
+        message: m.message,
+        created_at: m.time
+      })
     end
 
     on :message, /perrier[:]? stats/ do |m|
