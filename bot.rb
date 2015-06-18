@@ -15,6 +15,7 @@ require './environment.rb'
       c.server = ENV['SERVER'] || 'irc.freenode.net'
       c.channels = Channel.all.map &:name
       c.nick = ENV['NICK'] || 'klotztest'
+      c.password = ENV['IRC_PASS']
     end
 
     on :message, /.*/ do |m|
