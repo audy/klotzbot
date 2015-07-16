@@ -1,21 +1,15 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem 'progressbar'
 gem 'cinch'
 gem 'sequel'
-gem 'sqlite3'
 gem 'pg'
-gem 'pry'
-gem 'rake'
-gem 'colorize'
 
-group :web do
-  gem 'sinatra'
-  gem 'sinatra-websocket'
-end
-
-group :production do
-  gem 'rollbar', '~> 1.0.0'
+group :development do
+  gem 'progressbar'
+  gem 'rake'
+  gem 'colorize'
+  gem 'pry'
+  gem 'sqlite3'
 end
 
 group :test do

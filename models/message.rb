@@ -1,6 +1,6 @@
 class Message < Sequel::Model
   many_to_one :channel
- 
+
   def self.random
     @msg = nil
     last = self.last.id
