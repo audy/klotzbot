@@ -68,7 +68,7 @@ namespace :db do
 
     $stderr.puts "dumping messages"
 
-    Message.each do |m|
+    Message.dataset.use_cursor.each do |m|
       dat = { message: m.message,
               nick: m.nick,
               channel: $channels[m.channel_id],
