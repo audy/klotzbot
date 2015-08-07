@@ -2,12 +2,12 @@ source 'https://rubygems.org'
 
 gem 'cinch'
 gem 'sequel'
+gem 'colorize'
 gem 'pg'
 
 group :development do
   gem 'progressbar'
   gem 'rake'
-  gem 'colorize'
   gem 'pry'
   gem 'sqlite3'
 end
