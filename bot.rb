@@ -48,6 +48,13 @@ require './environment.rb'
       end
     end
 
+    on :message, /perrier[:]? last/ do |m|
+      if m.user.nick == ENV['OWNER']
+        msg = Message.last
+        m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+      end
+    end
+
   end
 
 
