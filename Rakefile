@@ -6,8 +6,9 @@ CHUNK_SIZE = 1000
 
 desc 'start interactive console with environment loaded'
 task :console do
-  Bundler.require :development
-  binding.pry
+  require 'irb'
+  ARGV.clear
+  IRB.start
 end
 
 namespace :chan do
