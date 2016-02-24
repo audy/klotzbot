@@ -3,21 +3,28 @@ require 'bundler'
 
 Bundler.require
 
+
+NICK         = ENV['NICK']
+SERVER       = ENV['SERVER']
+IRC_PASS     = ENV['IRC_PASS']
+OWNER        = ENV['OWNER']
+BOT_ENV      = ENV['BOT_ENV']
+DATABASE_URL = ENV['DATABASE_URL']
+
+
 def test?
-  ENV['BOT_ENV'] == 'test'
+  BOT_ENV == 'test'
 end
 
 def production?
-  ENV['BOT_ENV'] == 'production'
+  BOT_ENV == 'production'
 end
 
 # setup rollbar
-if production?
-  Bundler.require :production
-end
+Bundler.require(:production) if production?
 
 # connect to in-memory db if in test environment
-database = test? ? 'sqlite:///' : ENV['DATABASE_URL'] || 'sqlite://database.sqlite'
+database = test? ? 'sqlite:///' : DATABASE_URL || 'sqlite://database.sqlite'
 
 # because computers
 Sequel::Model.plugin :force_encoding, 'UTF-8'
