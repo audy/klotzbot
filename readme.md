@@ -1,3 +1,3 @@
-# Klotzbot
+# Pelegreno
 
-Austin G. Davis-Richardson
+An IRC logging bot by Austin G. Davis-Richardson
