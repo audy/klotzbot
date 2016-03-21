@@ -17,6 +17,12 @@ namespace :chan do
     Channel.all.map { |c| puts "#{c.id} -> #{c.name}" }
   end
 
+  task :somerandom do
+    10.times.map do |i|
+      puts "#{i}.) #{Message.random}"
+    end
+  end
+
   desc 'add a channel'
   task :add, :name do |t, args|
     p Channel.find_or_create(name: args[:name])
