@@ -56,6 +56,9 @@ require './environment.rb'
     end
   end
 
+# silence Cinch logging
+@bot.loggers.level = :fatal
+
 # reconnect automatically
 begin
   @bot.start
