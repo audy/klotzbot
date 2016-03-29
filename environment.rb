@@ -11,7 +11,6 @@ OWNER        = ENV['OWNER']
 BOT_ENV      = ENV['BOT_ENV']
 DATABASE_URL = ENV['DATABASE_URL']
 
-
 def test?
   BOT_ENV == 'test'
 end
@@ -32,7 +31,7 @@ Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8
 
 DB = Sequel.connect database
-DB.loggers << Logger.new($stderr) unless test?
+DB.loggers << Logger.new('/dev/null') unless test?
 
 if test?
   # migrate *before* running models
