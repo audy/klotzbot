@@ -20,7 +20,7 @@ require './environment.rb'
     Channel.all.map { |c| $channels[c.name] = c.id }
 
     configure do |c|
-      c.server = SERVER || 'irc.freenode.net'
+      c.server = SERVER
       c.channels = Channel.all.map &:name
       c.nick = NICK || 'klotztest'
       c.password = IRC_PASS
