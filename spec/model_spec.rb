@@ -5,29 +5,29 @@ describe 'models' do
   let(:message) { Message.new nick: 'test', message: 'test test test' }
 
   describe Channel do
-    it '.new' do
+    it '#new' do
       expect(channel).not_to eq(nil)
     end
 
-    it '.save' do
+    it '#save' do
       expect{channel.save}.not_to raise_error
     end
   end
 
   describe Message do
-    it '.new' do
+    it '#new' do
       expect(channel).not_to eq(nil)
     end
 
-    it '.save' do
+    it '#save' do
       expect{channel.save}.not_to raise_error
     end
 
-    it '.channel' do
+    it '#channel' do
       expect{message.channel}.not_to raise_error
     end
 
-    it '.channel=' do
+    it '#channel=' do
       channel.save
       message.save
       expect{message.channel = channel}.not_to raise_error
