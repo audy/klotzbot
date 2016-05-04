@@ -158,7 +158,7 @@ namespace :db do
         channel = m.channel.name
         channel = channel.send(colormap[channel])
         # right-justify channel name
-        puts "#{sprintf("%16s" % channel)} #{m.nick}: #{m.message}"
+        puts "#{sprintf("%16s" % channel)} #{m.nick}: #{m.message} #{(m.ip || 'missing').white}"
       end
       sleep 0.1
     end
