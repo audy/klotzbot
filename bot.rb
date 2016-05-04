@@ -63,7 +63,7 @@ require './environment.rb'
   end
 
 # silence Cinch logging
-@bot.loggers.level = :fatal
+@bot.loggers.level = :fatal if production?
 
 # reconnect automatically
 begin

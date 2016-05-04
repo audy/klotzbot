@@ -1,11 +1,12 @@
 require 'logger'
+require 'resolv'
 require 'bundler'
 
 Bundler.require
 
 
 NICK         = ENV['NICK']
-SERVER       = ENV['SERVER']
+SERVER       = ENV['SERVER'] || 'irc.freenode.net'
 IRC_PASS     = ENV['IRC_PASS']
 OWNER        = ENV['OWNER']
 BOT_ENV      = ENV['BOT_ENV']
@@ -31,7 +32,7 @@ Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8
 
 DB = Sequel.connect database
-DB.loggers << Logger.new('/dev/null') unless test?
+#DB.loggers << Logger.new('/dev/null') if production?
 
 if test?
   # migrate *before* running models
