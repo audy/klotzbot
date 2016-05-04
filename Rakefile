@@ -54,7 +54,7 @@ namespace :seed do
   task :messages do
     100.times do
       Message.create nick: 'test',
-        channel: Channel.find_or_create(name: %w{#test1 #test2 #test3}.sample),
+        channel: Channel.find_or_create(name: %w{#heyaudy}.sample),
         message: 'test test test!',
         created_at: Time.now
     end
