@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby File.readlines('.ruby-version').first.strip
+
 gem 'cinch'
 gem 'sequel'
 gem 'colorize'
