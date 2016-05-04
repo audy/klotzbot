@@ -29,11 +29,17 @@ require './environment.rb'
     on :message, /.*/ do |m|
       channel_id = $channels[m.channel.name]
       fail "unknown channel #{m.channel.name}" if channel_id.nil?
+
+      # try to get IP address
+      # this will crash if cloaking is enabled on the IRC server
+      ip = Resolv.getaddress(m.user.host) rescue nil
+
       Message.dataset.insert({
         nick: m.user.nick,
         channel_id: channel_id,
         message: m.message,
-        created_at: m.time
+        created_at: m.time,
+        ip: ip
       })
     end
 

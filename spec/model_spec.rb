@@ -34,5 +34,10 @@ describe 'models' do
       expect{message.save}.not_to raise_error
       expect(message.channel).to eq(channel)
     end
+
+    it '#ip' do
+      expect{message.ip}.to_not raise_error
+      expect{message.update ip: '0.0.0.0'}.to_not raise_error
+    end
   end
 end
