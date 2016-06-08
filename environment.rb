@@ -4,7 +4,6 @@ require 'bundler'
 
 Bundler.require
 
-
 NICK         = ENV['NICK']
 SERVER       = ENV['SERVER'] || 'irc.freenode.net'
 IRC_PASS     = ENV['IRC_PASS']
