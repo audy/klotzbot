@@ -4,6 +4,48 @@ require 'json'
 DUMP_FILE = ENV['DATA'] || '/dev/stdout'
 CHUNK_SIZE = 1000
 
+def stream_messages
+  # message filter
+  msg_filter = ENV['MSG_FILTER']
+  msg_filter = Regexp.new(msg_filter) unless msg_filter.nil?
+
+  # channel filter
+  chan_filter = ENV['CHAN_FILTER']
+  chan_filter = Regexp.new(chan_filter) unless chan_filter.nil?
+
+  colors = %w{red green yellow blue magenta cyan white light_red light_green
+  light_yellow light_blue light_magenta light_cyan light_white }
+
+  # colorize channel name to aid visibility
+  colormap = Hash.new { |h, k| h[k] = colors.sample }
+  DB.loggers = []
+
+  sh 'clear'
+
+  # memoize channels
+  # channel.name -> channel.id
+  channels = {}
+  # fill up channel hash
+  Channel.all.map { |c| channels[c.name] = c.id }
+
+  last_time = Time.now
+  while true do
+    msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
+    last_time = Time.now unless msgs.size == 0
+    msgs.each do |m|
+      next unless msg_filter.nil? or msg_filter =~ m.message
+      next unless chan_filter.nil? or chan_filter =~ m.channel.name
+
+      # colorize channel name
+      channel = m.channel.name
+      channel = channel.send(colormap[channel])
+      # right-justify channel name
+      puts "#{sprintf("%16s" % channel)} #{m.nick}: #{m.message} #{(m.ip || 'missing').white}"
+    end
+    sleep 0.1
+  end
+end
+
 desc 'start interactive console with environment loaded'
 task :console do
   require 'irb'
@@ -122,45 +164,10 @@ namespace :db do
 
   desc 'tail -f the irc stream'
   task :tail do
-
-    # message filter
-    msg_filter = ENV['MSG_FILTER']
-    msg_filter = Regexp.new(msg_filter) unless msg_filter.nil?
-
-    # channel filter
-    chan_filter = ENV['CHAN_FILTER']
-    chan_filter = Regexp.new(chan_filter) unless chan_filter.nil?
-
-    colors = %w{red green yellow blue magenta cyan white light_red light_green
-    light_yellow light_blue light_magenta light_cyan light_white }
-
-    # colorize channel name to aid visibility
-    colormap = Hash.new { |h, k| h[k] = colors.sample }
-    DB.loggers = []
-
-    sh 'clear'
-
-    # memoize channels
-    # channel.name -> channel.id
-    channels = {}
-    # fill up channel hash
-    Channel.all.map { |c| channels[c.name] = c.id }
-
-    last_time = Time.now
-    while true do
-      msgs = Message.last(10).keep_if { |m| m.created_at > last_time }
-      last_time = Time.now unless msgs.size == 0
-      msgs.each do |m|
-        next unless msg_filter.nil? or msg_filter =~ m.message
-        next unless chan_filter.nil? or chan_filter =~ m.channel.name
-
-        # colorize channel name
-        channel = m.channel.name
-        channel = channel.send(colormap[channel])
-        # right-justify channel name
-        puts "#{sprintf("%16s" % channel)} #{m.nick}: #{m.message} #{(m.ip || 'missing').white}"
-      end
-      sleep 0.1
+    begin
+      stream_messages
+    rescue SignalException => e
+      exit 0
     end
   end
 end
