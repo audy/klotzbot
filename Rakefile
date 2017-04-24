@@ -121,7 +121,8 @@ namespace :db do
       dat = { message: m.message,
               nick: m.nick,
               channel: $channels[m.channel_id],
-              created_at: m.created_at
+              created_at: m.created_at,
+              ip: m.ip
             }
       puts dat.to_json
     end
