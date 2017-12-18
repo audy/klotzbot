@@ -1,3 +1,4 @@
 .bundle/
 vendor/
 *.sqlite
+environment.env
