@@ -10,7 +10,15 @@ describe 'models' do
     end
 
     it '#save' do
-      expect{channel.save}.not_to raise_error
+      expect { channel.save }.not_to raise_error
+    end
+
+    it '#active?' do
+      expect(channel.active).to be_nil
+      channel.save
+      expect(channel.active).to eq(true)
+      expect { channel.update active: false }.to_not raise_error
+      expect(channel.reload.active).to eq(false)
     end
   end
 

@@ -17,7 +17,7 @@ require './environment.rb'
     $channels = {}
 
     # fill up channel hash
-    Channel.all.map { |c| $channels[c.name] = c.id }
+    Channel.where(active: true).map { |c| $channels[c.name] = c.id }
 
     configure do |c|
       c.server = SERVER
