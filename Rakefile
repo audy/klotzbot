@@ -88,7 +88,7 @@ end
 desc 'print random message'
 task :random do
   msg = Message.random
-  puts "[#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+  puts "[#{msg.channel.name}] #{msg.nick}: #{msg.message} @ #{msg.created_at.strftime('%D %T')}"
 end
 
 desc 'seed database'

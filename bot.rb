@@ -49,7 +49,7 @@ require './environment.rb'
 
     auth_on :message, /#{NICK}[:]? random/ do |m|
       msg = Message.random
-      m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message}"
+      m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message} @ #{msg.created_at.strftime('%D %T')} "
     end
 
     auth_on :message, /#{NICK}[:]? channels/ do |m|
