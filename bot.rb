@@ -12,10 +12,6 @@ require './environment.rb'
       end
     end
 
-    # memoize channels
-    # channel.name -> channel.id
-    $channels = Hash.new { |h, k| h[k] = Channel.find_or_create(name: k) }
-
     configure do |c|
       c.server = SERVER
       # only join active channels
@@ -25,8 +21,8 @@ require './environment.rb'
     end
 
     on :message, /.*/ do |m|
-      channel_id = $channels[m.channel.name]
-      fail "unknown channel #{m.channel.name}" if channel_id.nil?
+
+      channel = Channel.find(name: m.channel.name)
 
       # try to get IP address
       # this will crash if cloaking is enabled on the IRC server
@@ -34,7 +30,7 @@ require './environment.rb'
 
       Message.dataset.insert({
         nick: m.user.nick,
-        channel_id: channel_id,
+        channel_id: channel.id,
         message: m.message,
         created_at: m.time,
         ip: ip
