@@ -14,7 +14,7 @@ require './environment.rb'
 
     # memoize channels
     # channel.name -> channel.id
-    $channels = Hash.new { |h, k| h[k] = Channel.find(k) }
+    $channels = Hash.new { |h, k| h[k] = Channel.find_or_create(name: k) }
 
     configure do |c|
       c.server = SERVER
