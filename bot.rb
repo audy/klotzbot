@@ -14,14 +14,12 @@ require './environment.rb'
 
     # memoize channels
     # channel.name -> channel.id
-    $channels = {}
-
-    # fill up channel hash
-    Channel.where(active: true).map { |c| $channels[c.name] = c.id }
+    $channels = Hash.new { |h, k| h[k] = Channel.find(k) }
 
     configure do |c|
       c.server = SERVER
-      c.channels = Channel.all.map &:name
+      # only join active channels
+      c.channels = Channel.where(active: true).map(&:name)
       c.nick = NICK || 'klotztest'
       c.password = IRC_PASS
     end
