@@ -31,7 +31,6 @@ Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8
 
 DB = Sequel.connect database
-DB.loggers << Logger.new('/dev/null') if production?
 
 if test?
   # migrate *before* running models
