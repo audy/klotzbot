@@ -1,7 +1,5 @@
 db:
   image: postgres
-  ports:
-    - "5432"
   volumes:
     - data:/var/lib/postgresql/data
 
