@@ -1,15 +1,19 @@
 require 'logger'
 require 'resolv'
 require 'bundler'
+require 'pry'
 
 Bundler.require
 
-NICK         = ENV['NICK']
-SERVER       = ENV['SERVER'] || 'irc.freenode.net'
-IRC_PASS     = ENV['IRC_PASS']
-OWNER        = ENV['OWNER']
-BOT_ENV      = ENV['BOT_ENV']
-DATABASE_URL = ENV['DATABASE_URL']
+NICK          = ENV['NICK']
+SERVER        = ENV['SERVER']
+PORT          = Integer(ENV['PORT'])
+IRC_PASS      = ENV['IRC_PASS']
+OWNER         = ENV['OWNER']
+BOT_ENV       = ENV['BOT_ENV']
+DATABASE_URL  = ENV['DATABASE_URL']
+SASL_USERNAME = ENV['SASL_USERNAME']
+SASL_PASSWORD = ENV['SASL_PASSWORD']
 
 def test?
   BOT_ENV == 'test'

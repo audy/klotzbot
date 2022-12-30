@@ -15,14 +15,18 @@ require './environment.rb'
     configure do |c|
       c.server = SERVER
       # only join active channels
-      c.channels = Channel.where(active: true).map(&:name)
+      c.channels = Channel.where(active: true, network: SERVER).map(&:name)
       c.nick = NICK || 'klotztest'
       c.password = IRC_PASS
+      c.port = PORT
+      c.ssl.use = true
+      c.sasl.username = SASL_USERNAME
+      c.sasl.password = SASL_PASSWORD
     end
 
     on :message, /.*/ do |m|
-
-      channel = Channel.find(name: m.channel.name)
+      # TODO: cache this lookup?
+      channel = Channel.find(name: m.channel.name, network: SERVER)
 
       # try to get IP address
       # this will crash if cloaking is enabled on the IRC server
@@ -35,6 +39,12 @@ require './environment.rb'
         created_at: m.time,
         ip: ip
       })
+    end
+
+    on :connect do
+      $stderr.puts '#' * 80
+      $stderr.puts "CONNECTED!!!"
+      $stderr.puts '#' * 80
     end
 
     auth_on :message, /#{NICK}[:]? stats/ do |m|
@@ -67,6 +77,7 @@ require './environment.rb'
 begin
   @bot.start
 rescue Errno::ECONNRESET
+  $stderr.puts "SOMETHING WENT WRONG WITH CONNECTION ARGH"
   sleep 10
   retry
 end
