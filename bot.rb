@@ -54,6 +54,10 @@ require './environment.rb'
       msg = Message.last
       m.reply "(#{msg.id}) [#{msg.channel.name}] #{msg.nick}: #{msg.message}"
     end
+
+    auth_on :message, /#{NICK}[:]? channels/ do |m|
+      m.reply "#{Channel.count} channels (#{Channel.where(:active).count} active)"
+    end
   end
 
 # silence Cinch logging
