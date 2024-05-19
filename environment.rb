@@ -1,7 +1,6 @@
 require 'logger'
 require 'resolv'
 require 'bundler'
-require 'pry'
 
 Bundler.require
 

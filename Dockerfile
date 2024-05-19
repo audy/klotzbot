@@ -1,8 +1,10 @@
-FROM ruby:3.3.1-bookworm
+FROM ruby:2.7.0
 
 WORKDIR /app
 
 ADD . /app
+
+RUN bundle config set without 'development test'
 
 RUN bundle install
 
