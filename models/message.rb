@@ -4,7 +4,7 @@ class Message < Sequel::Model
 
   def self.random
     # start when we switched to libera.chat
-    start_id = 8178097
+    start_id = 81781052
     @msg = nil
     last = self.last.id
     while @msg.nil?
