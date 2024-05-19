@@ -6,4 +6,4 @@ ADD . /app
 
 RUN bundle install
 
-ENTRYPOINT ["ruby", "bot.rb"]
+ENTRYPOINT ["bundle", "exec", "ruby", "bot.rb"]
