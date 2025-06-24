@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool, Row};
 
@@ -118,7 +118,7 @@ pub struct Message {
     pub nick: String,
     pub channel_id: i32,
     pub message: String,
-    pub created_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
     pub ip: Option<String>,
 }
 
@@ -136,7 +136,7 @@ impl Message {
         .bind(nick)
         .bind(channel_id)
         .bind(message)
-        .bind(Utc::now())
+        .bind(Utc::now().naive_utc())
         .bind(ip)
         .execute(db)
         .await?;
@@ -206,7 +206,7 @@ impl Message {
     ) -> Result<Option<(Message, Channel)>, sqlx::Error> {
         let row = sqlx::query(
             r#"
-            SELECT 
+            SELECT
                 m.id, m.nick, m.channel_id, m.message, m.created_at, m.ip,
                 c.name as channel_name, c.active, c.network
             FROM messages m
