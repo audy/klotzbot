@@ -1,6 +1,6 @@
 # Klotzbot
 
-A high-performance IRC logging bot rewritten in Rust by Austin G. Davis-Richardson.
+An IRC bot that logs to SQL
 
 ## Features
 
@@ -20,13 +20,6 @@ Klotzbot responds to commands from the configured owner:
 - `<nick>: add #channel` - Add a channel to monitoring and join it
 - `<nick>: deactivate #channel` - Stop monitoring a channel and leave it
 - `<nick>: remove #channel` - Alias for deactivate command
-
-🔧 **Technical Features**
-- Modern async/await Rust architecture for high performance
-- Memory-safe operations with zero-cost abstractions
-- Command-line interface with comprehensive help
-- Docker support for easy deployment
-- Configurable logging levels and output
 
 ## Quick Start
 
@@ -70,21 +63,6 @@ Klotzbot uses command-line arguments for all configuration:
 
 ### Example Configurations
 
-**Basic setup for Libera.Chat:**
-```bash
-klotzbot --server irc.libera.chat --owner mynick
-```
-
-**With PostgreSQL database:**
-```bash
-klotzbot \
-  --server irc.libera.chat \
-  --owner mynick \
-  --nick mybot \
-  --database-url postgresql://botuser:password@db.example.com/irclog
-```
-
-**With custom port:**
 ```bash
 cargo run -- \
   --server localhost \
@@ -93,7 +71,7 @@ cargo run -- \
   --database-url postgresql://user:pass@localhost/klotzbot
 ```
 
-## Docker Deployment
+## Docker Development
 
 ### Build Image
 ```bash
@@ -191,61 +169,6 @@ cargo fmt --check
 cargo build --release
 ```
 
-### Project Structure
-```
-klotzbot/
-├── src/
-│   ├── main.rs          # Application entry point
-│   ├── config.rs        # CLI argument parsing
-│   ├── bot.rs           # IRC bot implementation  
-│   └── models.rs        # Database models
-├── migrations/          # SQL migrations
-├── Cargo.toml          # Rust dependencies
-├── Dockerfile.rust     # Docker build configuration
-└── readme.md          # This file
-```
-
-## Comparison with Ruby Version
-
-| Feature | Ruby (Cinch) | Rust |
-|---------|--------------|------|
-| Memory Usage | ~50MB | ~5MB |
-| CPU Usage | Higher | Lower |
-| Startup Time | ~2s | ~0.1s |
-| Dependencies | Many gems | Statically linked |
-| Safety | Runtime errors | Compile-time guarantees |
-| Concurrency | Threads | Async/await |
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## License
 
-This project maintains the same license as the original Ruby version.
-
-## Troubleshooting
-
-**Bot won't connect to IRC:**
-- Verify server hostname and port
-- Check if SSL/TLS is required (default port 6697 uses SSL)
-- Ensure nickname isn't already in use
-
-**Database connection fails:**
-- Verify PostgreSQL is running and accessible
-- Check connection string format
-- Ensure database and user exist with proper permissions
-
-**Commands not working:**
-- Confirm you're using the exact owner nickname specified
-- Try addressing the bot directly: `botname: stats`
-- Check bot logs for error messages
-
-**Docker issues:**
-- Ensure container can reach IRC server (check firewall/network)
-- Verify database container is running and accessible
-- Check container logs: `docker logs klotzbot`
+MIT
