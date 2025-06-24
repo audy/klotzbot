@@ -21,11 +21,13 @@ async fn main() -> Result<()> {
     // Connect to database
     let db = connect_database(&config).await?;
 
-    // Run migrations
-    sqlx::migrate!("./migrations")
-        .run(&db)
-        .await
-        .context("Failed to run migrations")?;
+    // Run migrations if --migrate flag is set
+    if config.migrate {
+        sqlx::migrate!("./migrations")
+            .run(&db)
+            .await
+            .context("Failed to run migrations")?;
+    }
 
     // Main bot loop with reconnection logic
     loop {
