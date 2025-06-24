@@ -37,7 +37,7 @@ async fn main() -> Result<()> {
             Err(e) => {
                 error!("Bot error: {}", e);
                 error!("SOMETHING WENT WRONG WITH CONNECTION ARGH");
-                
+
                 // Wait before reconnecting
                 tokio::time::sleep(Duration::from_secs(10)).await;
                 info!("Attempting to reconnect...");
@@ -50,16 +50,16 @@ async fn main() -> Result<()> {
 
 async fn connect_database(config: &Config) -> Result<PgPool> {
     let database_url = config.database_url();
-    
+
     if database_url.starts_with("sqlite") {
         return Err(anyhow::anyhow!(
             "SQLite support is limited due to type compatibility issues. Please use PostgreSQL for best results.\n\
             Example: postgresql://user:password@localhost:5432/klotzbot"
         ));
     }
-    
+
     info!("Connecting to PostgreSQL database: {}", database_url);
-    
+
     let pool = PgPool::connect(database_url)
         .await
         .context("Failed to connect to PostgreSQL database")?;

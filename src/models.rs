@@ -17,7 +17,7 @@ impl Channel {
         network: &str,
     ) -> Result<Option<Channel>, sqlx::Error> {
         sqlx::query_as::<_, Channel>(
-            "SELECT id, name, active, network FROM channels WHERE name = $1 AND network = $2"
+            "SELECT id, name, active, network FROM channels WHERE name = $1 AND network = $2",
         )
         .bind(name)
         .bind(network)
@@ -30,7 +30,7 @@ impl Channel {
         network: &str,
     ) -> Result<Vec<String>, sqlx::Error> {
         let channels = sqlx::query_scalar::<_, String>(
-            "SELECT name FROM channels WHERE active = true AND network = $1"
+            "SELECT name FROM channels WHERE active = true AND network = $1",
         )
         .bind(network)
         .fetch_all(db)
@@ -46,9 +46,10 @@ impl Channel {
     }
 
     pub async fn count_active(db: &PgPool) -> Result<i64, sqlx::Error> {
-        let count = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM channels WHERE active = true")
-            .fetch_one(db)
-            .await?;
+        let count =
+            sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM channels WHERE active = true")
+                .fetch_one(db)
+                .await?;
         Ok(count)
     }
 
@@ -67,7 +68,7 @@ impl Channel {
                     .bind(existing.id)
                     .execute(db)
                     .await?;
-                
+
                 return Ok(Channel {
                     id: existing.id,
                     name: existing.name,
@@ -95,7 +96,7 @@ impl Channel {
         network: &str,
     ) -> Result<Option<Channel>, sqlx::Error> {
         let updated_rows = sqlx::query(
-            "UPDATE channels SET active = false WHERE name = $1 AND network = $2 AND active = true"
+            "UPDATE channels SET active = false WHERE name = $1 AND network = $2 AND active = true",
         )
         .bind(name)
         .bind(network)
@@ -152,7 +153,7 @@ impl Message {
 
     pub async fn get_random(db: &PgPool) -> Result<Option<Message>, sqlx::Error> {
         let start_id = 81781052i32; // start when we switched to libera.chat
-        
+
         // Get the last message ID
         let last_id: Option<i32> = sqlx::query_scalar("SELECT MAX(id) FROM messages")
             .fetch_one(db)
@@ -169,9 +170,9 @@ impl Message {
 
         while attempts < MAX_ATTEMPTS {
             let random_id = rand::random::<i32>() % (last_id - start_id + 1) + start_id;
-            
+
             if let Ok(Some(message)) = sqlx::query_as::<_, Message>(
-                "SELECT id, nick, channel_id, message, created_at, ip FROM messages WHERE id = $1"
+                "SELECT id, nick, channel_id, message, created_at, ip FROM messages WHERE id = $1",
             )
             .bind(random_id)
             .fetch_optional(db)
@@ -179,7 +180,7 @@ impl Message {
             {
                 return Ok(Some(message));
             }
-            
+
             attempts += 1;
         }
 
@@ -211,7 +212,7 @@ impl Message {
             FROM messages m
             JOIN channels c ON m.channel_id = c.id
             WHERE m.id = $1
-            "#
+            "#,
         )
         .bind(message_id)
         .fetch_optional(db)

@@ -39,11 +39,7 @@ impl KlotzBot {
 
         let client = Client::from_config(irc_config).await?;
 
-        Ok(KlotzBot {
-            config,
-            db,
-            client,
-        })
+        Ok(KlotzBot { config, db, client })
     }
 
     pub async fn run(&mut self) -> Result<()> {
@@ -76,7 +72,12 @@ impl KlotzBot {
         Ok(())
     }
 
-    async fn handle_privmsg(&self, target: &str, msg: &str, irc_msg: &irc::proto::Message) -> Result<()> {
+    async fn handle_privmsg(
+        &self,
+        target: &str,
+        msg: &str,
+        irc_msg: &irc::proto::Message,
+    ) -> Result<()> {
         // Skip private messages, only handle channel messages
         if !target.starts_with('#') {
             return Ok(());
@@ -140,7 +141,7 @@ impl KlotzBot {
 
     async fn handle_owner_commands(&self, target: &str, msg: &str) -> Result<()> {
         let nick_pattern = format!(r"{}[:]?\s+", regex::escape(&self.config.nick));
-        
+
         if let Ok(stats_regex) = Regex::new(&format!("{}stats", nick_pattern)) {
             if stats_regex.is_match(msg) {
                 let message_count = DbMessage::count(&self.db).await?;
@@ -154,7 +155,9 @@ impl KlotzBot {
         if let Ok(random_regex) = Regex::new(&format!("{}random", nick_pattern)) {
             if random_regex.is_match(msg) {
                 if let Some(random_msg) = DbMessage::get_random(&self.db).await? {
-                    if let Some((msg, channel)) = DbMessage::get_with_channel(&self.db, random_msg.id).await? {
+                    if let Some((msg, channel)) =
+                        DbMessage::get_with_channel(&self.db, random_msg.id).await?
+                    {
                         let response = format!(
                             "({}) [{}] {}: {} @ {}",
                             msg.id,
@@ -183,13 +186,12 @@ impl KlotzBot {
         if let Ok(last_regex) = Regex::new(&format!("{}last", nick_pattern)) {
             if last_regex.is_match(msg) {
                 if let Some(last_msg) = DbMessage::get_last(&self.db).await? {
-                    if let Some((msg, channel)) = DbMessage::get_with_channel(&self.db, last_msg.id).await? {
+                    if let Some((msg, channel)) =
+                        DbMessage::get_with_channel(&self.db, last_msg.id).await?
+                    {
                         let response = format!(
                             "({}) [{}] {}: {}",
-                            msg.id,
-                            channel.name,
-                            msg.nick,
-                            msg.message
+                            msg.id, channel.name, msg.nick, msg.message
                         );
                         self.client.send_privmsg(target, &response)?;
                     }
@@ -207,7 +209,10 @@ impl KlotzBot {
                             // Join the channel
                             if let Err(e) = self.client.send_join(channel_name) {
                                 warn!("Failed to join channel {}: {}", channel_name, e);
-                                let response = format!("Added channel {} to database but failed to join: {}", channel_name, e);
+                                let response = format!(
+                                    "Added channel {} to database but failed to join: {}",
+                                    channel_name, e
+                                );
                                 self.client.send_privmsg(target, &response)?;
                             } else {
                                 let response = if channel.active {
@@ -228,28 +233,40 @@ impl KlotzBot {
             }
         }
 
-        if let Ok(deactivate_regex) = Regex::new(&format!("{}(?:deactivate|remove)\\s+(#\\S+)", nick_pattern)) {
+        if let Ok(deactivate_regex) =
+            Regex::new(&format!("{}(?:deactivate|remove)\\s+(#\\S+)", nick_pattern))
+        {
             if let Some(captures) = deactivate_regex.captures(msg) {
                 if let Some(channel_name) = captures.get(1) {
                     let channel_name = channel_name.as_str();
-                    match Channel::deactivate_channel(&self.db, channel_name, &self.config.server).await {
+                    match Channel::deactivate_channel(&self.db, channel_name, &self.config.server)
+                        .await
+                    {
                         Ok(Some(_)) => {
                             // Part the channel
                             if let Err(e) = self.client.send_part(channel_name) {
                                 warn!("Failed to part channel {}: {}", channel_name, e);
-                                let response = format!("Deactivated channel {} in database but failed to part: {}", channel_name, e);
+                                let response = format!(
+                                    "Deactivated channel {} in database but failed to part: {}",
+                                    channel_name, e
+                                );
                                 self.client.send_privmsg(target, &response)?;
                             } else {
-                                let response = format!("Deactivated and left channel {}", channel_name);
+                                let response =
+                                    format!("Deactivated and left channel {}", channel_name);
                                 self.client.send_privmsg(target, &response)?;
                             }
                         }
                         Ok(None) => {
-                            let response = format!("Channel {} was not found or already inactive", channel_name);
+                            let response = format!(
+                                "Channel {} was not found or already inactive",
+                                channel_name
+                            );
                             self.client.send_privmsg(target, &response)?;
                         }
                         Err(e) => {
-                            let response = format!("Failed to deactivate channel {}: {}", channel_name, e);
+                            let response =
+                                format!("Failed to deactivate channel {}: {}", channel_name, e);
                             self.client.send_privmsg(target, &response)?;
                         }
                     }
