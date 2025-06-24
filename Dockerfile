@@ -1,11 +1,41 @@
-FROM ruby:2.7.0
+FROM rust:1.85 AS builder
 
 WORKDIR /app
 
-ADD . /app
+# Copy dependency files
+COPY Cargo.toml Cargo.lock ./
 
-RUN bundle config set without 'development test'
+# Create a dummy main.rs to build dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs
 
-RUN bundle install
+# Build dependencies (this will be cached)
+RUN cargo build --release && rm -rf src
 
-ENTRYPOINT ["bundle", "exec", "ruby", "bot.rb"]
+# Copy source code
+COPY src ./src
+COPY migrations ./migrations
+
+# Build the application
+RUN cargo build --release
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy the binary from builder stage
+COPY --from=builder /app/target/release/klotzbot /app/klotzbot
+
+# Copy migrations
+COPY --from=builder /app/migrations /app/migrations
+
+# Create a non-root user
+RUN useradd -r -s /bin/false klotzbot
+USER klotzbot
+
+CMD ["./klotzbot"]
