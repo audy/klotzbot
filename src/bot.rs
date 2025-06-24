@@ -200,6 +200,22 @@ impl KlotzBot {
             }
         }
 
+        if let Ok(join_regex) = Regex::new(&format!("{}join\\s+(#\\S+)", nick_pattern)) {
+            if let Some(captures) = join_regex.captures(msg) {
+                if let Some(channel_name) = captures.get(1) {
+                    let channel_name = channel_name.as_str();
+                    if let Err(e) = self.client.send_join(channel_name) {
+                        let response = format!("Failed to join {}: {}", channel_name, e);
+                        self.client.send_privmsg(target, &response)?;
+                    } else {
+                        let response = format!("Joined {}", channel_name);
+                        self.client.send_privmsg(target, &response)?;
+                    }
+                }
+                return Ok(());
+            }
+        }
+
         if let Ok(add_regex) = Regex::new(&format!("{}add\\s+(#\\S+)", nick_pattern)) {
             if let Some(captures) = add_regex.captures(msg) {
                 if let Some(channel_name) = captures.get(1) {

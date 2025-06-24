@@ -60,6 +60,7 @@ Klotzbot uses command-line arguments for all configuration:
 | `--irc-pass` | | ❌ | - | IRC server password |
 | `--sasl-username` | | ❌ | - | SASL authentication username |
 | `--sasl-password` | | ❌ | - | SASL authentication password |
+| `--migrate`       | | ❌ | - | Migrate on startup |
 
 ### Example Configurations
 

@@ -1,25 +1,35 @@
 -- Initial setup migration
 CREATE TABLE IF NOT EXISTS messages (
     id SERIAL PRIMARY KEY,
-    nick VARCHAR NOT NULL,
-    channel VARCHAR NOT NULL,
-    message TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    nick TEXT,
+    message TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    channel_id INTEGER,
+    ip TEXT
 );
 
 CREATE TABLE IF NOT EXISTS channels (
     id SERIAL PRIMARY KEY,
-    name VARCHAR UNIQUE NOT NULL,
-    active BOOLEAN NOT NULL DEFAULT true,
-    network VARCHAR NOT NULL DEFAULT 'irc.freenode.net'
+    name TEXT,
+    active BOOLEAN DEFAULT true,
+    network TEXT DEFAULT 'irc.freenode.net'
 );
 
--- Add foreign key relationship
-ALTER TABLE messages 
-ADD COLUMN channel_id INTEGER REFERENCES channels(id),
-ADD COLUMN ip VARCHAR;
+-- Add foreign key constraint only if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'messages_channel_id_fkey'
+        AND table_name = 'messages'
+    ) THEN
+        ALTER TABLE messages ADD CONSTRAINT messages_channel_id_fkey
+        FOREIGN KEY (channel_id) REFERENCES channels(id);
+    END IF;
+END $$;
 
--- Create indexes for performance
+-- Create indexes for performance (only if they don't exist)
+CREATE INDEX IF NOT EXISTS messages_pkey ON messages(id);
+CREATE UNIQUE INDEX IF NOT EXISTS channels_channel_name_index ON channels(name);
 CREATE INDEX IF NOT EXISTS idx_messages_channel_id ON messages(channel_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
-CREATE INDEX IF NOT EXISTS idx_channels_name_network ON channels(name, network);

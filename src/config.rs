@@ -35,6 +35,10 @@ pub struct Config {
     /// SASL password (optional)
     #[arg(long)]
     pub sasl_password: Option<String>,
+
+    /// Run database migrations on startup
+    #[arg(long)]
+    pub migrate: bool,
 }
 
 impl Config {
