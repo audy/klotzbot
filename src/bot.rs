@@ -98,11 +98,8 @@ impl KlotzBot {
             }
         };
 
-        // Try to resolve IP address from hostname
-        let ip = self.resolve_ip(irc_msg).await;
-
         // Store message in database
-        DbMessage::insert(&self.db, nick, channel.id, msg, ip.as_deref())
+        DbMessage::insert(&self.db, nick, channel.id, msg, None)
             .await
             .context("Failed to insert message")?;
 
@@ -112,27 +109,6 @@ impl KlotzBot {
         }
 
         Ok(())
-    }
-
-    async fn resolve_ip(&self, message: &irc::proto::Message) -> Option<String> {
-        if let Some(prefix) = &message.prefix {
-            if let Some(hostname) = prefix.to_string().split('@').nth(1).map(|s| s.to_string()) {
-                // Try to resolve hostname to IP
-                match tokio::task::spawn_blocking(move || {
-                    (hostname.clone() + ":80").to_socket_addrs()
-                })
-                .await
-                {
-                    Ok(Ok(mut addrs)) => {
-                        if let Some(addr) = addrs.next() {
-                            return Some(addr.ip().to_string());
-                        }
-                    }
-                    _ => {}
-                }
-            }
-        }
-        None
     }
 
     fn is_owner(&self, nick: &str) -> bool {
