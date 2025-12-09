@@ -22,6 +22,7 @@ impl KlotzBot {
 
         let mut irc_config = irc::client::data::Config {
             nickname: Some(config.nick.clone()),
+            nick_password: config.sasl_password.clone(),
             server: Some(config.server.clone()),
             port: Some(config.port),
             use_tls: Some(true),
