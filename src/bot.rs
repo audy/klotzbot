@@ -5,7 +5,7 @@ use futures::prelude::*;
 use irc::client::prelude::*;
 use regex::Regex;
 use sqlx::PgPool;
-use tracing::{error, info, warn};
+use tracing::{debug, error, info, warn};
 
 pub struct KlotzBot {
     config: Config,
@@ -64,7 +64,7 @@ impl KlotzBot {
                 self.handle_privmsg(target, msg, &message).await?;
             }
             _ => {
-                info!("Unhandled: {:?}", message);
+                debug!("{:?}", message);
             }
         }
         Ok(())
