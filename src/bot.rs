@@ -49,9 +49,6 @@ impl KlotzBot {
         self.client.identify()?;
 
         info!("Connected to IRC!");
-        println!("{}", "#".repeat(80));
-        println!("CONNECTED!!!");
-        println!("{}", "#".repeat(80));
 
         while let Some(irc_message) = stream.next().await.transpose()? {
             if let Err(e) = self.handle_irc_message(irc_message).await {
@@ -67,7 +64,9 @@ impl KlotzBot {
             Command::PRIVMSG(target, msg) => {
                 self.handle_privmsg(target, msg, &message).await?;
             }
-            _ => {}
+            _ => {
+                info!("Unhandled: {:?}", message);
+            }
         }
         Ok(())
     }
