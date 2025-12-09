@@ -5,7 +5,6 @@ use futures::prelude::*;
 use irc::client::prelude::*;
 use regex::Regex;
 use sqlx::PgPool;
-use std::net::ToSocketAddrs;
 use tracing::{error, info, warn};
 
 pub struct KlotzBot {
