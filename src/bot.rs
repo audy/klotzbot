@@ -27,6 +27,8 @@ impl KlotzBot {
             port: Some(config.port),
             use_tls: Some(true),
             channels: channels,
+            burst_window_length: config.burst_window_length,
+            max_messages_in_burst: config.max_messages_in_burst,
             ..Default::default()
         };
 

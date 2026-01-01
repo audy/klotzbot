@@ -39,6 +39,21 @@ pub struct Config {
     /// Run database migrations on startup
     #[arg(long)]
     pub migrate: bool,
+
+    // The maximum number of messages that can be sent in a burst window before they’ll be delayed.
+    // Messages are automatically delayed until the start of the next window. The message throttling
+    // system maintains the invariant that in the past burst_window_length seconds, the maximum
+    // number of messages sent is max_messages_in_burst. This defaults to 15 messages when not
+    // specified.
+    #[arg(long, default_value = "15")]
+    pub max_messages_in_burst: Option<u32>,
+
+    // The amount of time in seconds to consider a window for burst messages. The message throttling
+    // system maintains the invariant that in the past burst_window_length seconds, the maximum
+    // number of messages sent is max_messages_in_burst. This defaults to 8 seconds when not
+    // specified.
+    #[arg(long, default_value = "8")]
+    pub burst_window_length: Option<u32>,
 }
 
 impl Config {
